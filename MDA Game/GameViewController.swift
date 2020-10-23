@@ -15,12 +15,21 @@ class GameViewController: UIViewController {
     // MARK: - Properties
     var duration: TimeInterval = 5
     var ship: SCNNode!
-    var score = 0
+    var score = 0 {
+        didSet {
+            lablel.text = "Score: \(score)"
+        }
+    }
     
     // MARK: - Methods
     
     func addLabel() {
-        
+        scnView.addSubview(lablel)
+        lablel.numberOfLines = 2
+        lablel.frame = CGRect(x: 0, y: 0, width: scnView.frame.width, height: 100)
+        lablel.font = UIFont.systemFont(ofSize: 30)
+        lablel.textAlignment = .center
+        score = 0
     }
     
     func getShip() -> SCNNode {
@@ -45,7 +54,9 @@ class GameViewController: UIViewController {
         //ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 0.5, z: 0, duration: 1)))
         ship.runAction(SCNAction.move(to: SCNVector3(), duration: duration)) {
             self.ship.removeFromParentNode()
-            print(#line, #function, "Game over")
+            DispatchQueue.main.async {
+                self.lablel.text = "Game Over!\nFinal score: \(self.score)"
+            }
         }
         
         // retrieve the ship node
@@ -114,6 +125,9 @@ class GameViewController: UIViewController {
         
         //Add ship
         addShip()
+        
+        //add label
+        addLabel()
     }
     
     @objc
@@ -137,7 +151,10 @@ class GameViewController: UIViewController {
             SCNTransaction.completionBlock = {
                 self.ship.removeFromParentNode()
                 self.score += 1
-                print(#line, #function, "The ship \(self.score) has been shoted!")
+                
+                DispatchQueue.main.async {
+                    self.lablel.text = "Score: \(self.score)"
+                }
                 
                 self.duration *= 0.95
                 self.ship = self.getShip()
