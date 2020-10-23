@@ -10,12 +10,19 @@
 import SceneKit
 
 class GameViewController: UIViewController {
+    // MARK: - Outlets
+    let lablel = UILabel()
     // MARK: - Properties
     var duration: TimeInterval = 5
     var ship: SCNNode!
     var score = 0
     
     // MARK: - Methods
+    
+    func addLabel() {
+        
+    }
+    
     func getShip() -> SCNNode {
         // create a new scene
         let scene = SCNScene(named: "art.scnassets/ship.scn")!
@@ -41,21 +48,13 @@ class GameViewController: UIViewController {
             print(#line, #function, "Game over")
         }
         
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
         // retrieve the ship node
         scnView.scene?.rootNode.addChildNode(ship)
     }
     
     func removeShip() {
-        // create a new scene
-        let scnView = self.view as! SCNView
-        
         // remove ship from the scene
         scnView.scene?.rootNode.childNode(withName: "ship", recursively: true)?.removeFromParentNode()
-        
-        
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,9 +90,6 @@ class GameViewController: UIViewController {
         // animate the 3d object
         //ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 0.5, z: 0, duration: 1)))
         
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
         // set the scene to the view
         scnView.scene = scene
         
@@ -122,9 +118,6 @@ class GameViewController: UIViewController {
     
     @objc
     func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
         // check what nodes are tapped
         let p = gestureRecognize.location(in: scnView)
         let hitResults = scnView.hitTest(p, options: [:])
@@ -155,6 +148,12 @@ class GameViewController: UIViewController {
             
             SCNTransaction.commit()
         }
+    }
+    
+    // MARK: - Computed properties
+    
+    var scnView: SCNView {
+        return self.view as! SCNView
     }
     
     override var shouldAutorotate: Bool {
