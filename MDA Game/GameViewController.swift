@@ -11,53 +11,71 @@ import SceneKit
 
 class GameViewController: UIViewController {
     // MARK: - Outlets
-    let lablel  = UILabel()
+    // score label object
+    let label  = UILabel()
+    // restart button object
     let restart = UIButton()
 
     // MARK: - Properties
+    // plane flight time
     var duration: TimeInterval = 5
-    var ship: SCNNode!
-    var score = 0 {
+    // missed shots cound
+    var missedShots = 0
+    // game score
+    var score: Double = 0 {
         didSet {
-            lablel.text = "Score: \(score)"
+            label.text = "Score: \(score)"
         }
     }
-    var tapGestureGame: UITapGestureRecognizer? = nil
+    // plane node object
+    var ship: SCNNode!
+    // side shot
+    var sideShot = false
     
     // MARK: - Methods
     func addLabel() {
-        scnView.addSubview(lablel)
-        lablel.numberOfLines = 2
-        lablel.frame = CGRect(x: 0, y: 0, width: scnView.frame.width, height: 80)
-        lablel.font = UIFont.systemFont(ofSize: 30)
-        lablel.textAlignment = .center
+        scnView.addSubview(label)
+        label.numberOfLines = 2
+        label.frame = CGRect(x: 0, y: 0, width: scnView.frame.width, height: 80)
+        label.font = UIFont.systemFont(ofSize: 30)
+        label.textAlignment = .center
         score = 0
     }
     
     func addRestartButton() {
-        restart.frame = CGRect(x: 0, y: 100, width: scnView.frame.width, height: 50)
+        let width: CGFloat   = round(scnView.frame.width * 0.7)
+        let padding: CGFloat = round(scnView.frame.width * 0.15)
+        
+        restart.frame = CGRect(x: padding, y: 100, width: width, height: 50)
         restart.setTitle("Restart Game", for: .normal)
         restart.setTitleColor(UIColor.red, for: .normal)
         restart.titleLabel?.font =  UIFont.systemFont(ofSize: 30)
         restart.addTarget(self, action: #selector(restartAction), for: .touchUpInside)
         restart.isHidden = true
+        restart.backgroundColor = .systemYellow
+        restart.layer.cornerRadius = 20
 
         scnView.addSubview(restart)
     }
     
-    @objc func buttonAction(_ sender: UIButton!) {
-        print("Button pressed")
-    }
-    
-    // Button Action:
-    @objc func restartAction() {
+    // Restart button action
+    @IBAction func restartAction() {
+        // reset flight time
         duration = 5
+        // set missed shots to zero
+        missedShots = 0
+        // reset score
         score = 0
+        // hide restart button
         restart.isHidden = true
+        // get plane object
         ship = getShip()
+        // add plane to the scene
         addShip()
+        // set side shot flag to false
+        sideShot = false
     }
-    
+    //
     func getShip() -> SCNNode {
         // create a new scene
         let scene = SCNScene(named: "art.scnassets/ship.scn")!
@@ -78,8 +96,9 @@ class GameViewController: UIViewController {
         ship.runAction(SCNAction.move(to: SCNVector3(), duration: duration)) {
             self.ship.removeFromParentNode()
             DispatchQueue.main.async {
-                self.lablel.text = "Game Over!\nFinal score: \(self.score)"
+                self.sideShot = true
                 self.restart.isHidden = false
+                self.label.text = "Game Over!\nFinal score: \(Double(round(self.score * 10) / 10))"
             }
         }
         // retrieve the ship node
@@ -117,14 +136,14 @@ class GameViewController: UIViewController {
         // set the scene to the view
         scnView.scene = scene
         // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
+        scnView.allowsCameraControl = false
         // show statistics such as fps and timing information
         scnView.showsStatistics = true
         // configure the view
         scnView.backgroundColor = UIColor.black
         // add a tap gesture recognizer
-        tapGestureGame = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        scnView.addGestureRecognizer(tapGestureGame!)
+        let tapGestureGame = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        scnView.addGestureRecognizer(tapGestureGame)
         //remove ship
         removeShip()
         //Get ship
@@ -137,13 +156,12 @@ class GameViewController: UIViewController {
         addRestartButton()
     }
     
-    @objc
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
+    @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
         // check what nodes are tapped
         let p = gestureRecognize.location(in: scnView)
         let hitResults = scnView.hitTest(p, options: [:])
         // check that we clicked on at least one object
-        if hitResults.count > 0 {
+        if (hitResults.count > 0) {
             // retrieved the first clicked object
             let result = hitResults[0]
             // get its material
@@ -154,16 +172,22 @@ class GameViewController: UIViewController {
             // on completion - unhighlight
             SCNTransaction.completionBlock = {
                 self.ship.removeFromParentNode()
-                self.score += 1
+                let score  = Double(1000 / (1 + self.missedShots))
+                self.score += Double(round(score) / 1000)
                 DispatchQueue.main.async {
-                    self.lablel.text = "Score: \(self.score)"
+                    self.label.text = "Score: \(Double(round(self.score * 10) / 10))"
                 }
-                self.duration *= 0.95
-                self.ship = self.getShip()
-                self.addShip()
+                self.duration *= 0.9
+                self.missedShots = 0
+                if (!self.sideShot) {
+                    self.ship = self.getShip()
+                    self.addShip()
+                }
             }
             material.emission.contents = UIColor.red
             SCNTransaction.commit()
+        } else {
+            missedShots += 1
         }
     }
     // MARK: - Computed properties
@@ -172,7 +196,7 @@ class GameViewController: UIViewController {
     }
     
     override var shouldAutorotate: Bool {
-        return true
+        return false
     }
     
     override var prefersStatusBarHidden: Bool {
