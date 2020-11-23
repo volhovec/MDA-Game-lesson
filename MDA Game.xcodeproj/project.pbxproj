@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B3507E9E2549FFD000FB1835 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = B3507E9D2549FFD000FB1835 /* SQLite */; };
+		B35181C2254DF5E600230839 /* mda-game.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = B35181C1254DF5E600230839 /* mda-game.sqlite */; };
 		B36E84282542DBED000A646A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B36E84272542DBED000A646A /* AppDelegate.swift */; };
 		B36E842A2542DBED000A646A /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = B36E84292542DBED000A646A /* art.scnassets */; };
 		B36E842C2542DBED000A646A /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B36E842B2542DBED000A646A /* GameViewController.swift */; };
@@ -15,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B35181C1254DF5E600230839 /* mda-game.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; name = "mda-game.sqlite"; path = "../../../../SQLite-DB/mda-game.sqlite"; sourceTree = "<group>"; };
 		B36E84242542DBED000A646A /* MDA Game.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MDA Game.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B36E84272542DBED000A646A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B36E84292542DBED000A646A /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -29,12 +32,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3507E9E2549FFD000FB1835 /* SQLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B35181C0254DF50E00230839 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				B35181C1254DF5E600230839 /* mda-game.sqlite */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		B36E841B2542DBED000A646A = {
 			isa = PBXGroup;
 			children = (
@@ -54,6 +66,7 @@
 		B36E84262542DBED000A646A /* MDA Game */ = {
 			isa = PBXGroup;
 			children = (
+				B35181C0254DF50E00230839 /* Model */,
 				B36E84272542DBED000A646A /* AppDelegate.swift */,
 				B36E84292542DBED000A646A /* art.scnassets */,
 				B36E842B2542DBED000A646A /* GameViewController.swift */,
@@ -80,6 +93,9 @@
 			dependencies = (
 			);
 			name = "MDA Game";
+			packageProductDependencies = (
+				B3507E9D2549FFD000FB1835 /* SQLite */,
+			);
 			productName = "MDA Game";
 			productReference = B36E84242542DBED000A646A /* MDA Game.app */;
 			productType = "com.apple.product-type.application";
@@ -107,6 +123,9 @@
 				Base,
 			);
 			mainGroup = B36E841B2542DBED000A646A;
+			packageReferences = (
+				B3507E9C2549FFD000FB1835 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+			);
 			productRefGroup = B36E84252542DBED000A646A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -121,6 +140,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B35181C2254DF5E600230839 /* mda-game.sqlite in Resources */,
 				B36E842A2542DBED000A646A /* art.scnassets in Resources */,
 				B36E84312542DBEF000A646A /* Assets.xcassets in Resources */,
 				B36E842F2542DBED000A646A /* Main.storyboard in Resources */,
@@ -329,6 +349,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B3507E9C2549FFD000FB1835 /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.12.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B3507E9D2549FFD000FB1835 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B3507E9C2549FFD000FB1835 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B36E841C2542DBED000A646A /* Project object */;
 }

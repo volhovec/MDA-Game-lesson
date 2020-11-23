@@ -5,14 +5,14 @@
 //  Created by Leonid Stefanenko on 23.10.2020.
 //
 
-//import UIKit
-//import QuartzCore
 import SceneKit
 
 class GameViewController: UIViewController {
     // MARK: - Outlets
     // score label object
-    let label  = UILabel()
+    let labelScore = UILabel()
+    let labelHit  = UILabel()
+    let labelOver  = UILabel()
     // restart button object
     let restart = UIButton()
 
@@ -24,7 +24,12 @@ class GameViewController: UIViewController {
     // game score
     var score: Double = 0 {
         didSet {
-            label.text = "Score: \(score)"
+            labelScore.text = "Score: \(score)"
+        }
+    }
+    var hit: Int = 0 {
+        didSet {
+            labelHit.text = "Hit: \(hit)"
         }
     }
     // plane node object
@@ -33,20 +38,63 @@ class GameViewController: UIViewController {
     var sideShot = false
     
     // MARK: - Methods
-    func addLabel() {
-        scnView.addSubview(label)
-        label.numberOfLines = 2
-        label.frame = CGRect(x: 0, y: 0, width: scnView.frame.width, height: 80)
-        label.font = UIFont.systemFont(ofSize: 30)
-        label.textAlignment = .center
+    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool
+    {
+            //Util.copyFile("Student.sqlite")
+            return true
+    }
+    
+    func addLabelHit() {
+        let width: CGFloat   = round(scnView.frame.width * 0.3)
+        let padding: CGFloat = round(scnView.frame.width * 0.05)
+        
+        scnView.addSubview(labelHit)
+        labelHit.numberOfLines = 1
+        
+        labelHit.frame = CGRect(x: padding, y: 0, width: width, height: 40)
+        labelHit.font = UIFont.systemFont(ofSize: 24)
+        labelHit.textAlignment = .left
+        hit = 0
+    }
+    
+    func addLabelGameOver() {
+        addLabel(label: labelOver, padX: 0.2, padY: 0.35, width: 0.6, fontSize: 30)
+        labelOver.text = "Game Over!"
+        labelOver.textColor = UIColor.red
+        labelOver.textAlignment = .center
+        labelOver.isHidden = true
+        scnView.addSubview(labelOver)
+    }
+    
+    func addLabelScore() {
+        let width: CGFloat   = round(scnView.frame.width * 0.45)
+        let padding: CGFloat = round(scnView.frame.width * 0.5)
+        
+        scnView.addSubview(labelScore)
+        labelScore.numberOfLines = 1
+        labelScore.frame = CGRect(x: padding, y: 0, width: width, height: 40)
+        labelScore.font = UIFont.systemFont(ofSize: 24)
+        labelScore.textAlignment = .right
         score = 0
     }
     
+    func addLabel(label: UILabel, padX: Float, padY: Float, width: Float, fontSize: CGFloat) {
+        let width: CGFloat    = round(scnView.frame.width * CGFloat(width))
+        let paddingX: CGFloat = round(scnView.frame.width * CGFloat(padX))
+        let paddingY: CGFloat = round(scnView.frame.width * CGFloat(padY))
+        
+        label.numberOfLines = 1
+        label.frame = CGRect(x: paddingX, y: paddingY, width: width, height: 40)
+        label.font = UIFont.systemFont(ofSize: fontSize)
+    }
+    
+    
     func addRestartButton() {
         let width: CGFloat   = round(scnView.frame.width * 0.7)
-        let padding: CGFloat = round(scnView.frame.width * 0.15)
+        let paddingX: CGFloat = round(scnView.frame.width * 0.15)
+        let paddingY: CGFloat = round(scnView.frame.width * 0.35 + 70)
         
-        restart.frame = CGRect(x: padding, y: 100, width: width, height: 50)
+        restart.frame = CGRect(x: paddingX, y: paddingY, width: width, height: 50)
         restart.setTitle("Restart Game", for: .normal)
         restart.setTitleColor(UIColor.red, for: .normal)
         restart.titleLabel?.font =  UIFont.systemFont(ofSize: 30)
@@ -66,8 +114,10 @@ class GameViewController: UIViewController {
         missedShots = 0
         // reset score
         score = 0
+        hit   = 0
         // hide restart button
         restart.isHidden = true
+        labelOver.isHidden = true
         // get plane object
         ship = getShip()
         // add plane to the scene
@@ -98,7 +148,7 @@ class GameViewController: UIViewController {
             DispatchQueue.main.async {
                 self.sideShot = true
                 self.restart.isHidden = false
-                self.label.text = "Game Over!\nFinal score: \(Double(round(self.score * 10) / 10))"
+                self.labelOver.isHidden = false
             }
         }
         // retrieve the ship node
@@ -151,9 +201,11 @@ class GameViewController: UIViewController {
         //Add ship
         addShip()
         //add label
-        addLabel()
+        addLabelScore()
+        addLabelHit()
         //add restart button
         addRestartButton()
+        addLabelGameOver()
     }
     
     @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
@@ -174,8 +226,9 @@ class GameViewController: UIViewController {
                 self.ship.removeFromParentNode()
                 let score  = Double(1000 / (1 + self.missedShots))
                 self.score += Double(round(score) / 1000)
+                self.hit  += 1
                 DispatchQueue.main.async {
-                    self.label.text = "Score: \(Double(round(self.score * 10) / 10))"
+                    self.labelScore.text = "Score: \(Double(round(self.score * 10) / 10))"
                 }
                 self.duration *= 0.9
                 self.missedShots = 0
